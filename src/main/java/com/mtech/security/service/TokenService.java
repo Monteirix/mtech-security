@@ -33,4 +33,12 @@ public class TokenService {
                 .compact();
 
     }
+    public String getSubject(String token){
+        return  Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
 }
