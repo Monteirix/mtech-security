@@ -1,7 +1,10 @@
 package com.mtech.security.controller;
 
+import com.mtech.security.dto.UserResponseDTO;
 import com.mtech.security.entities.User;
 import com.mtech.security.service.UserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,13 +19,17 @@ public class UserController {
 
 
     @PostMapping
-
     public User create(@RequestBody User user) {
         return userService.save(user);
     }
 
     @GetMapping("/protected")
-    public String protectedRoute() {
-            return"voce esta autenticado";
-}
+    public UserResponseDTO protectedRoute() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        User user = (User) authentication.getPrincipal();
+
+            return new UserResponseDTO(user);
+    }
 }
