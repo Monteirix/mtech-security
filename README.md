@@ -1,29 +1,33 @@
 # MTech Security
 
-API REST de autenticação desenvolvida em Java com Spring Boot, com foco em autenticação e autorização utilizando Spring Security e JWT.
+API REST de autenticação desenvolvida em **Java 23 com Spring Boot**, utilizando **Spring Security e JWT** para autenticação e proteção de endpoints.
 
-O projeto foi desenvolvido como prática de **Backend Java**, aplicando conceitos de desenvolvimento de APIs REST, persistência de dados, segurança, testes automatizados, documentação de APIs e execução com Docker.
+O projeto foi desenvolvido com foco em prática de **Backend Java**, explorando segurança, persistência de dados, testes automatizados, documentação de APIs e containerização.
+
+**Java 23 · Spring Boot · Spring Security · JWT · PostgreSQL · Docker · Swagger/OpenAPI**
+
+---
 
 ## Tecnologias
 
-| Tecnologia               | Utilização                                         |
-| ------------------------ | -------------------------------------------------- |
-| Java 23                  | Linguagem de programação                           |
-| Spring Boot 4.1.1        | Framework principal                                |
-| Spring Security 7.1.1    | Autenticação e autorização                         |
-| Spring Data JPA          | Persistência de dados                              |
-| Hibernate                | ORM                                                |
-| PostgreSQL 16            | Banco de dados principal                           |
-| H2                       | Banco de dados utilizado em desenvolvimento/testes |
-| JJWT 0.12.6              | Geração e validação de JWT                         |
-| Bean Validation          | Validação de dados                                 |
-| Lombok                   | Redução de código boilerplate                      |
-| Maven                    | Gerenciamento e build do projeto                   |
-| Docker                   | Containerização                                    |
-| Docker Compose           | Orquestração dos containers                        |
-| Springdoc OpenAPI        | Documentação Swagger/OpenAPI                       |
-| JUnit / Spring Boot Test | Testes automatizados                               |
-| Git / GitHub             | Versionamento e hospedagem                         |
+| Tecnologia               | Utilização                    |
+| ------------------------ | ----------------------------- |
+| Java 23                  | Linguagem de programação      |
+| Spring Boot 4.1.1        | Framework principal           |
+| Spring Security 7.1.1    | Autenticação e autorização    |
+| Spring Data JPA          | Persistência de dados         |
+| Hibernate                | ORM                           |
+| PostgreSQL 16            | Banco de dados principal      |
+| H2                       | Banco de dados em memória     |
+| JJWT 0.12.6              | Geração e validação de JWT    |
+| Bean Validation          | Validação de dados            |
+| Lombok                   | Redução de código boilerplate |
+| Maven                    | Gerenciamento e build         |
+| Docker                   | Containerização               |
+| Docker Compose           | Orquestração dos containers   |
+| Springdoc OpenAPI 3.1.0  | Documentação Swagger/OpenAPI  |
+| JUnit / Spring Boot Test | Testes automatizados          |
+| Git / GitHub             | Versionamento e hospedagem    |
 
 ---
 
@@ -33,47 +37,61 @@ O projeto foi desenvolvido como prática de **Backend Java**, aplicando conceito
 * Autenticação com email e senha
 * Geração de JWT
 * Proteção de endpoints
-* Persistência com PostgreSQL
-* Dockerização da aplicação
-* Documentação Swagger/OpenAPI
-* Testes automatizados
+* Persistência de usuários com PostgreSQL
 * Validação de dados
 * Tratamento de exceções
+* Documentação interativa com Swagger/OpenAPI
+* Testes automatizados
+* Execução da aplicação com Docker Compose
 
 ---
 
 ## Arquitetura
 
-O projeto utiliza uma organização em camadas para separar responsabilidades:
+O projeto utiliza uma organização em camadas, separando responsabilidades entre os principais componentes da aplicação:
 
-* **Controller** — recebe as requisições HTTP e expõe os endpoints da API.
-* **Service** — concentra as regras e operações relacionadas ao domínio.
-* **Repository** — responsável pelo acesso aos dados através do Spring Data JPA.
-* **Entity** — representa as entidades persistidas no banco de dados.
-* **DTO** — define os objetos utilizados na comunicação entre API e cliente.
-* **Mapper** — auxilia na conversão entre diferentes representações de dados.
-* **Security / Configuration** — concentra configurações relacionadas à segurança e autenticação.
-* **Exception handling** — centraliza o tratamento das exceções e respostas de erro.
+* **Controller** — exposição dos endpoints e processamento das requisições HTTP.
+* **Service** — implementação das regras e operações da aplicação.
+* **Repository** — acesso e persistência dos dados através do Spring Data JPA.
+* **Entity** — representação das entidades persistidas no banco.
+* **DTO** — objetos utilizados na entrada e saída de dados da API.
+* **Mapper** — conversão entre diferentes representações de dados.
+* **Security / Configuration** — configurações relacionadas à autenticação e segurança.
+* **Exception** — tratamento das exceções e padronização das respostas de erro.
+
+Essa organização mantém as responsabilidades separadas e facilita a manutenção e evolução da aplicação.
 
 ---
 
 ## Autenticação e Segurança
 
-O fluxo de autenticação funciona da seguinte forma:
+A autenticação utiliza **Spring Security** e **JWT**.
 
-1. O usuário realiza o cadastro.
-2. O usuário realiza login utilizando email e senha.
-3. O Spring Security autentica as credenciais.
-4. A aplicação gera um JWT.
-5. O cliente envia o JWT no header `Authorization`.
-6. O filtro JWT valida o token.
-7. O usuário autenticado pode acessar endpoints protegidos.
+O fluxo principal é:
 
-Para acessar um endpoint protegido, o token deve ser enviado no seguinte formato:
+```text
+Cadastro
+   ↓
+Login
+   ↓
+Spring Security autentica as credenciais
+   ↓
+JWT é gerado
+   ↓
+Cliente envia o JWT
+   ↓
+Filtro JWT valida o token
+   ↓
+Acesso ao endpoint protegido
+```
+
+O token deve ser enviado no header `Authorization` utilizando o formato:
 
 ```http
 Authorization: Bearer <JWT>
 ```
+
+Endpoints protegidos exigem um JWT válido.
 
 ---
 
@@ -93,17 +111,23 @@ Realiza o cadastro de um novo usuário.
 }
 ```
 
-**Resposta:** `201 Created`
+**Resposta de sucesso:**
 
-Em caso de tentativa de cadastro com um email já existente:
+```text
+201 Created
+```
 
-**Resposta:** `409 Conflict`
+Caso o email já esteja cadastrado:
+
+```text
+409 Conflict
+```
 
 ---
 
 ### `POST /login`
 
-Realiza a autenticação do usuário utilizando email e senha.
+Realiza a autenticação utilizando email e senha.
 
 **Request:**
 
@@ -114,13 +138,19 @@ Realiza a autenticação do usuário utilizando email e senha.
 }
 ```
 
-Em caso de autenticação bem-sucedida, a API retorna o **JWT diretamente como `String`**.
+Em caso de autenticação bem-sucedida, o endpoint retorna **o próprio JWT como `String`**.
 
-**Resposta:** `200 OK`
+**Resposta de sucesso:**
 
-Credenciais inválidas resultam em:
+```text
+200 OK
+```
 
-**Resposta:** `401 Unauthorized`
+Credenciais inválidas:
+
+```text
+401 Unauthorized
+```
 
 ---
 
@@ -128,15 +158,13 @@ Credenciais inválidas resultam em:
 
 Endpoint protegido que retorna os dados do usuário autenticado.
 
-É necessário enviar um JWT válido no header `Authorization`.
-
-**Request:**
+É necessário enviar um JWT válido:
 
 ```http
 Authorization: Bearer <JWT>
 ```
 
-**Resposta:** `200 OK`
+**Resposta de sucesso:**
 
 ```json
 {
@@ -147,17 +175,23 @@ Authorization: Bearer <JWT>
 }
 ```
 
+```text
+200 OK
+```
+
 Sem autenticação válida:
 
-**Resposta:** `401 Unauthorized`
+```text
+401 Unauthorized
+```
 
 ---
 
 ## Swagger / OpenAPI
 
-A API possui documentação interativa utilizando Swagger/OpenAPI.
+A API possui documentação interativa utilizando **Swagger/OpenAPI**.
 
-Com a aplicação em execução, a documentação pode ser acessada em:
+Com a aplicação em execução, acesse:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
@@ -165,35 +199,44 @@ http://localhost:8080/swagger-ui/index.html
 
 O Swagger permite:
 
-* visualizar os endpoints disponíveis;
-* visualizar os schemas utilizados pela API;
-* executar requisições diretamente pela interface;
-* autenticar utilizando JWT através do botão `Authorize`.
+* visualizar os endpoints;
+* consultar os schemas utilizados pela API;
+* executar requisições;
+* informar o JWT através do botão `Authorize`;
+* testar endpoints protegidos diretamente pela interface.
 
 ---
 
 ## Docker
 
-O projeto possui configuração para execução utilizando Docker Compose, com:
+O projeto utiliza **Docker Compose** para executar a aplicação e o PostgreSQL em containers separados.
 
-* container da aplicação;
-* container PostgreSQL.
+### Containers
 
-### Build da aplicação
+| Container            | Função                |
+| -------------------- | --------------------- |
+| `mtech-security-api` | Aplicação Spring Boot |
+| `mtech-postgres`     | Banco PostgreSQL 16   |
 
-Utilizando o Maven Wrapper:
+A aplicação se conecta ao PostgreSQL através da rede criada pelo Docker Compose.
+
+### Build
+
+O projeto possui Maven Wrapper, portanto o Maven não precisa estar instalado globalmente.
+
+Para gerar o build:
 
 ```bash
 .\mvnw.cmd clean package
 ```
 
-### Subir os containers
+### Subir a aplicação
 
 ```bash
 docker compose up -d --build
 ```
 
-### Verificar os containers em execução
+### Verificar os containers
 
 ```bash
 docker ps
@@ -201,7 +244,7 @@ docker ps
 
 ---
 
-## Execução Local
+## Execução
 
 ### Pré-requisitos
 
@@ -209,37 +252,31 @@ docker ps
 * Docker Desktop
 * Git
 
-O projeto possui **Maven Wrapper**, portanto não é necessário instalar o Maven globalmente.
-
-### Fluxo de execução
-
-Clone o repositório:
+### 1. Clonar o repositório
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Monteirix/mtech-security.git
 ```
 
-Entre na pasta do projeto:
+### 2. Entrar na pasta
 
 ```bash
 cd mtech-security
 ```
 
-Gere o build:
+### 3. Gerar o build
 
 ```bash
 .\mvnw.cmd clean package
 ```
 
-Suba os containers:
+### 4. Subir os containers
 
 ```bash
 docker compose up -d --build
 ```
 
-Com os containers em execução, a API estará disponível na aplicação configurada no projeto.
-
-A documentação pode ser acessada pelo Swagger:
+### 5. Acessar a documentação
 
 ```text
 http://localhost:8080/swagger-ui/index.html
@@ -249,15 +286,15 @@ http://localhost:8080/swagger-ui/index.html
 
 ## Testes
 
-O projeto possui testes automatizados relacionados à geração de tokens, serviço de usuários e contexto da aplicação.
-
-Testes existentes:
+O projeto possui testes automatizados relacionados a diferentes componentes da aplicação:
 
 * `TokenServiceTest`
 * `UserServiceTest`
 * `SecurityApplicationTests`
 
-Para executar os testes:
+Os testes abrangem componentes relacionados à geração de tokens, serviço de usuários e contexto da aplicação.
+
+Para executar:
 
 ```bash
 .\mvnw.cmd test
@@ -285,7 +322,7 @@ src
 └── test
 ```
 
-A estrutura segue uma separação de responsabilidades entre as principais camadas da aplicação.
+A estrutura segue a separação de responsabilidades utilizada pela aplicação.
 
 ---
 
@@ -293,12 +330,13 @@ A estrutura segue uma separação de responsabilidades entre as principais camad
 
 O projeto foi desenvolvido com foco no aprendizado prático de:
 
+* Spring Boot;
 * Spring Security;
 * autenticação e autorização;
 * JWT;
 * desenvolvimento de APIs REST;
 * PostgreSQL;
-* Docker;
+* Docker e Docker Compose;
 * testes automatizados;
 * documentação de APIs;
 * organização em camadas;
@@ -313,11 +351,12 @@ As funcionalidades abaixo são possibilidades de evolução e **não estão impl
 * gerenciamento de permissões mais granular;
 * implementação de refresh token;
 * ampliação dos testes de integração;
-* tratamento e documentação mais detalhada das respostas de erro;
+* documentação mais detalhada das respostas de erro;
 * deploy da aplicação.
 
 ---
 
 ## Objetivo
 
-Este projeto tem como objetivo demonstrar, na prática, conhecimentos de **Backend Java**, aplicando **Spring Boot, Spring Security, JWT, PostgreSQL, Docker, testes automatizados e Swagger/OpenAPI** no desenvolvimento de uma API REST de autenticação.
+O MTech Security é um projeto de estudo e portfólio focado em **Backend Java**, no qual foram aplicados conceitos e tecnologias como **Spring Boot, Spring Security, JWT, PostgreSQL, Docker, testes automatizados e Swagger/OpenAPI** no desenvolvimento de uma API REST de autenticação.
+
